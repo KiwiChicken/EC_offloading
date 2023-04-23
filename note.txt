@@ -1,0 +1,40 @@
+# htsim option parameter
+--expt:
+    val=1 # flow convergence
+    val=2 # single link simulation
+    val=3 # conga
+    val=4 # pfabric
+    val=5 # incast
+    val=6 # fat tree
+
+--flowdist:
+    val=pareto
+    val=enterprise
+    val=datamining
+    val=<null> # uniform
+
+--queue:
+    val=fq # fair queue
+    val=cq # calendar queue
+    val=afq # approximate fair queue
+    val=pq # priority queue
+    val=sfq # stocastic fair queue
+    val=<null> # fifo queue
+
+--endhost:
+    val=pp # packet pair
+    val=timely
+    val=dctcp
+    val=dtcp
+    val=ddctcp
+
+--logfile=: # log file
+--utilization: # faction number (0, 1)
+
+# log format
+## type1: flow start
+<flow name> <start time> <flow ID> <flow size> <src_node> <des_nod>
+## type2: flow finish
+Flow <flow name> <flow ID> size <flow size> start <start time> end <end time> fct <flow completion time> sent <round to MTU> tput <throughput> rtt <RTT time> cwnd <congestion window size> alpha <alpha value>
+## type3: queue stat
+<queue name> <simulation time> stats <flow id>-><packet number> ...
