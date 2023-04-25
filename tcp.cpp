@@ -10,6 +10,7 @@
 using namespace std;
 
 bool TcpSrc::_enable_dctcp = false;
+bool TcpSink::_ec_offload = false;
 map<uint64_t, uint64_t> TcpSrc::slacks;
 map<uint64_t, uint64_t> TcpSink::slacks;
 uint64_t TcpSrc::totalPkts = 0;
@@ -456,12 +457,20 @@ TcpSrc::retransmitPacket(int reason)
 
 TcpSink::TcpSink() : DataSink() {}
 
+// TODO: increment client counter and generate forward flow
+// when spawning encoded packets, add to a shadow buff in event list to prevent utilization overflow
+void 
+TcpSink::processECPacket(DataPacket &pkt) {}
+
 void
 TcpSink::receivePacket(Packet &pkt)
 {
     DataPacket *p = (DataPacket*)(&pkt);
     simtime_picosec ts = p->ts();
-    processDataPacket(*p);
+    if (_ec_offload)
+        processDataPacket(*p); // ec work here
+    
+    processDataPacket(*p);  
 
     if (p->getFlag(Packet::DEADLINE)) {
         uint64_t hist = p->getPriority()/1000;
@@ -477,6 +486,7 @@ TcpSink::receivePacket(Packet &pkt)
     pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_RCVDESTROY);
     p->free();
 
+    if (!_ec_offload)
     DataAck *ack = DataAck::newpkt(_src->_flow, *_route, 1, _cumulative_ack);
     ack->flow().logTraffic(*ack, *this, TrafficLogger::PKT_CREATESEND);
     ack->set_ts(ts);

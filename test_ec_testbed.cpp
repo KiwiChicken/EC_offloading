@@ -64,6 +64,7 @@ conga_testbed(const ArgList &args, Logfile &logfile)
 }
 
 // in base case, flows directly go from client(src) to storage server(dst)
+// modify src and dst here to change workload
 int
 ec::generateRandomRoute(route_t *&fwd,
                               route_t *&rev,
@@ -90,9 +91,7 @@ ec::generateRandomRoute(route_t *&fwd,
     uint32_t dst_tree = dst / CongaTopology::N_SERVER;
     uint32_t src_server = src % CongaTopology::N_SERVER;
     uint32_t dst_server = dst % CongaTopology::N_SERVER;
-    uint32_t core_fwd = rand() % CongaTopology::N_CORE;
-    uint32_t core_rev = rand() % CongaTopology::N_CORE;
-    // uint32_t core = 0;
+    uint32_t core = rand() % CongaTopology::N_CORE; // same return core for consistency
 
     fwd = new route_t();
     rev = new route_t();
@@ -105,17 +104,17 @@ ec::generateRandomRoute(route_t *&fwd,
 
     if (src_tree != dst_tree) {
         // core = get_best_lbtag(src, dst);
-        fwd->push_back(topo.qLeafCore[core_fwd][src_tree]);
-        fwd->push_back(topo.pLeafCore[core_fwd][src_tree]);
+        fwd->push_back(topo.qLeafCore[core][src_tree]);
+        fwd->push_back(topo.pLeafCore[core][src_tree]);
 
-        rev->push_back(topo.qLeafCore[core_rev][dst_tree]);
-        rev->push_back(topo.pLeafCore[core_rev][dst_tree]);
+        rev->push_back(topo.qLeafCore[core][dst_tree]);
+        rev->push_back(topo.pLeafCore[core][dst_tree]);
 
-        fwd->push_back(topo.qCoreLeaf[core_fwd][dst_tree]);
-        fwd->push_back(topo.pCoreLeaf[core_fwd][dst_tree]);
+        fwd->push_back(topo.qCoreLeaf[core][dst_tree]);
+        fwd->push_back(topo.pCoreLeaf[core][dst_tree]);
 
-        rev->push_back(topo.qCoreLeaf[core_rev][src_tree]);
-        rev->push_back(topo.pCoreLeaf[core_rev][src_tree]);
+        rev->push_back(topo.qCoreLeaf[core][src_tree]);
+        rev->push_back(topo.pCoreLeaf[core][src_tree]);
     }
 
     fwd->push_back(topo.qLeafServer[dst_tree][dst_server]);
@@ -124,5 +123,5 @@ ec::generateRandomRoute(route_t *&fwd,
     rev->push_back(topo.qLeafServer[src_tree][src_server]);
     rev->push_back(topo.pLeafServer[src_tree][src_server]);
 
-    return 0;
+    return core;
 }
