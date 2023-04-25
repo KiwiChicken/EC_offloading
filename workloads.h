@@ -15,7 +15,8 @@ class Workloads
             UNIFORM,    // All flows are of the same size
             PARETO,     // Pareto distributed with shape (alpha) 1.2
             ENTERPRISE, // Enterprise workload from CONGA paper.
-            DATAMINING  // Datamining workload from CONGA paper.
+            DATAMINING,  // Datamining workload from CONGA paper.
+            ERASURE_CODING  //not implemented, same as uniform
         };
 
         Workloads(uint32_t avgFlowSize, FlowDist flowSizeDist);
