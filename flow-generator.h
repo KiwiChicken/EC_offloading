@@ -14,6 +14,8 @@
 #include "workloads.h"
 #include "prof.h"
 
+#include "ec_offload.h"
+
 #include <deque>
 #include <functional>
 

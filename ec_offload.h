@@ -8,7 +8,7 @@
 #include "datasource.h"
 #include "tcp.h"
 #include "flow-generator.h"
-#include "ec_offload_route.h"
+#include "ec_route.h"
 
 // FPGA, event based TCP
 class EcFromFPGASrc : public DataSource
@@ -34,6 +34,12 @@ public:
         _pkt_size(pkt_size),
         _pending_pkts(0),
         _complete(false) {}
+
+    ~EcFromFPGASrc() {
+        delete _route_fwd;
+        delete _route_rev;
+        delete _sink;
+    }
 
     void printStatus();
     void doNextEvent();
@@ -98,89 +104,85 @@ class EcToFPGASrc : public TcpSrc
 
 public:
     EcToFPGASrc(TrafficLogger *pktlogger, uint32_t flowsize = 0, simtime_picosec duration = 0) : 
-        TcpSrc(NULL, pktlogger, flowsize, duration) {
-        simtime_picosec current_ts = EventList::Get().now();
-
-        auto src = new EcFromFPGASrc(NULL);
-        auto dst = new EcFromFPGASink();
-
-        src->setName("test_src");
-        dst->setName("test_dst");
-        src->_node_id = 0;
-        dst->_node_id = 1;
-
-        auto route_fwd = new route_t();
-        route_fwd->push_back(dst);
-        auto route_rcv = new route_t();
-        route_rcv->push_back(src);
-
-        src->connect(current_ts, *route_fwd, *route_rcv, *dst);
-
-        _src = src;
-    }
+        TcpSrc(NULL, pktlogger, flowsize, duration) {}
 
     void printStatus();
     void doNextEvent();
     void receivePacket(Packet &pkt);
 
 private:
-    EcFromFPGASrc* _src;
 };
 
 // FPGA
-class EcToFPGASink : public TcpSink
+class EcToFPGASink : public TcpSink, public EventSource
 {
     friend class EcToFPGASrc;
 
 public:
-    EcToFPGASink() : 
+    EcToFPGASink(simtime_picosec exec_time = 0, uint64_t mem = 0) : 
         TcpSink(), 
+        EventSource("EcToFPGASink"),
         _pkt_count(0),
+        _exec_time(exec_time),
+        _next_idle(0),
+        _mem_limit(mem),
+        _mem_usage(0),
+        _pending_events(0),
+        _highest_received(0),
         _forwarding()
     {
         // TODO: initialize forwarding table
         simtime_picosec current_ts = EventList::Get().now();
 
-        auto flow_routes = new std::vector<ec_offload::flow_info_t>(); 
-        ec_offload::genDstRoutes(*flow_routes);
-        // for (auto route : flow_routes) {
-        //     EcFromFPGASrc *src = new EcFromFPGASrc(NULL);
-        //     EcFromFPGASink *dst = new EcFromFPGASink();
+        auto flow_routes = std::vector<ec_route::flow_info_t>(); 
+        ec_route::genRoutes(_node_id, flow_routes);
 
-        //     src->setName(str() + "->" + std::to_string(route.dst));
-        //     dst->setName(str() + "<-" + std::to_string(route.dst));
-        //     src->_node_id = _node_id;
-        //     dst->_node_id = route.dst;
+        for (auto route : flow_routes) {
+            EcFromFPGASrc *src = new EcFromFPGASrc(NULL);
+            EcFromFPGASink *dst = new EcFromFPGASink();
 
-        //     route.fwd_route->push_back(dst);
-        //     route.rcv_route->push_back(src);
-        //     src->connect(current_ts, *route.fwd_route, *route.rcv_route, *dst);
-        //     _forwarding.push_back(src);
-        // }
-        std::cout << "test1" << std::endl << std::flush;
-        delete flow_routes;
-        std::cout << "test2" << std::endl << std::flush;
+            src->setName(DataSink::str() + "->" + std::to_string(route.dst));
+            dst->setName(DataSink::str() + "<-" + std::to_string(route.dst));
+            src->_node_id = _node_id;
+            dst->_node_id = route.dst;
+
+            route.fwd_route->push_back(dst);
+            route.rcv_route->push_back(src);
+            src->connect(current_ts, *route.fwd_route, *route.rcv_route, *dst);
+            _forwarding.push_back(src);
+        }
+    }
+
+    ~EcToFPGASink() {
+        for (auto it = _forwarding.begin(); it != _forwarding.end(); it++)
+            delete *it;
     }
 
     void receivePacket(Packet &pkt);
     void printStatus();
 
+    void doNextEvent();
+
     bool isFinished() {
         for (auto it = _forwarding.begin(); it != _forwarding.end(); it++) {
-            if ((*it)->isFinished()) {
-                delete *it;
-                _forwarding.erase(it);
-            } else {
+            if (!(*it)->isFinished()) 
                 return false;
-            }
         }
         // all forwarding routes have completed
         return true;
     }
 
 private:
+    uint64_t _pending_events;
+    simtime_picosec _exec_time;
+    simtime_picosec _next_idle;
+    uint64_t _mem_limit;
+    uint64_t _mem_usage;
     uint64_t _pkt_count;
+    uint64_t _highest_received;
     std::vector<EcFromFPGASrc*> _forwarding;
+
+    void broadcastEc();
 };
 
 #endif

@@ -76,6 +76,13 @@ TcpSrc::doNextEvent()
         sendPackets();
     }
 
+    // Do not clean up right away
+    else if (_state == PENDING) {
+        if (_flow._nPackets == 0) {
+            return;
+        }
+    }
+
     // Cleanup the finished flow.
     else if (_state == FINISH) {
         // If no more flow packets in the system, delete all objects.
@@ -142,7 +149,7 @@ TcpSrc::receivePacket(Packet &pkt)
     pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_RCVDESTROY);
     p->free();
 
-    if (_state == FINISH) {
+    if (_state == FINISH || _state == PENDING) {
         return;
     }
 

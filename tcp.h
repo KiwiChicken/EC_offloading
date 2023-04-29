@@ -29,6 +29,7 @@ class TcpSrc : public DataSource
         SLOW_START,
         CONG_AVOID,
         FAST_RECOV,
+        PENDING,
         FINISH
     } _state;
 

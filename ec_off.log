@@ -1,0 +1,160 @@
+src0 5.73995 6339 100000 150 0
+src1 1.98935 6342 100000 438 9
+src2 3.60219 6345 100000 276 6
+src3 4.40604 6348 100000 416 6
+src4 4.71281 6351 100000 205 8
+src5 2.06308 6354 100000 606 10
+src6 2.3359 6357 100000 484 8
+src7 5.8502 6360 100000 372 3
+src8 2.2357 6363 100000 328 10
+src9 4.16695 6366 100000 406 10
+src10 5.68349 6369 100000 429 11
+src11 4.66648 6372 100000 160 5
+src12 4.17868 6375 100000 418 8
+src13 7.23247 6378 100000 359 9
+src14 5.88354 6381 100000 398 0
+src15 4.88322 6384 100000 272 7
+src16 5.74079 6387 100000 173 4
+src17 6.98072 6390 100000 162 3
+src18 4.38341 6393 100000 660 0
+src19 7.02712 6396 100000 666 4
+src20 7.44033 6399 100000 357 8
+src21 6.36338 6402 100000 213 9
+src22 4.78768 6405 100000 732 1
+src23 6.68016 6408 100000 288 3
+src24 6.8642 6411 100000 170 9
+src25 8.65541 6414 100000 713 4
+src26 7.67414 6417 100000 483 1
+src27 8.05578 6420 100000 262 2
+src28 4.78879 6423 100000 703 11
+src29 9.05184 6426 100000 16 9
+src30 8.97978 6429 100000 661 5
+src31 8.34599 6432 100000 520 0
+src32 7.26966 6435 100000 168 0
+src33 9.25611 6438 100000 359 6
+src34 8.1385 6441 100000 417 7
+src35 5.1441 6444 100000 185 5
+src36 6.27343 6447 100000 384 10
+src37 6.00178 6450 100000 207 10
+src38 9.29016 6453 100000 660 11
+src39 8.057 6456 100000 259 6
+src40 10.2197 6459 100000 374 7
+src41 7.26533 6462 100000 632 4
+src42 9.21791 6465 100000 724 9
+src43 9.63661 6468 100000 27 8
+src44 6.03071 6471 100000 576 10
+src45 9.2847 6474 100000 605 0
+src46 9.12193 6477 100000 91 3
+src47 9.1112 6480 100000 431 8
+src48 8.08913 6483 100000 406 6
+src49 9.67522 6486 100000 665 5
+src50 10.4453 6489 100000 285 2
+src51 7.71394 6492 100000 198 11
+src52 8.42648 6495 100000 54 5
+src53 7.91293 6498 100000 753 0
+src54 9.60397 6501 100000 705 9
+src55 9.9119 6504 100000 464 2
+src56 7.74797 6507 100000 168 3
+src57 7.33444 6510 100000 159 8
+src58 12.3934 6513 100000 480 3
+src59 10.563 6516 100000 687 4
+src60 11.2223 6519 100000 374 9
+src61 7.5977 6522 100000 636 5
+src62 10.9561 6525 100000 592 5
+src63 10.1068 6528 100000 361 4
+src64 13.1324 6531 100000 664 1
+src65 10.2515 6534 100000 150 1
+src66 11.945 6537 100000 107 2
+src67 9.77221 6540 100000 9 8
+src68 10.3691 6543 100000 549 11
+src69 10.366 6546 100000 94 0
+src70 10.5837 6549 100000 398 8
+src71 10.6359 6552 100000 668 8
+src72 13.0607 6555 100000 480 0
+src73 13.7535 6558 100000 507 5
+src74 13.8315 6561 100000 481 8
+src75 12.2456 6564 100000 666 5
+src76 12.2691 6567 100000 736 5
+src77 11.0695 6570 100000 433 1
+src78 10.0994 6573 100000 377 9
+
+Live Flows: 79
+LiveFlow src78 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src35 size 100000 start 5 endBytes 3000 fct 161.863 sent 9000 0 rate 4.94245 cwnd 6000 alpha 0
+LiveFlow src34 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src33 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src32 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src31 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src30 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src29 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src28 size 100000 start 5 endBytes 3000 fct 173.707 sent 9000 0 rate 4.60545 cwnd 6000 alpha 0
+LiveFlow src27 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src26 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src25 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src24 size 100000 start 7 endBytes 1500 fct 209.053 sent 6000 0 rate 3.82677 cwnd 4500 alpha 0
+LiveFlow src23 size 100000 start 7 endBytes 1500 fct 221.323 sent 6000 0 rate 3.61463 cwnd 4500 alpha 0
+LiveFlow src22 size 100000 start 5 endBytes 3000 fct 173.744 sent 9000 0 rate 4.60448 cwnd 6000 alpha 0
+LiveFlow src21 size 100000 start 6 endBytes 1500 fct 242.441 sent 6000 0 rate 3.29977 cwnd 4500 alpha 0
+LiveFlow src20 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src19 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src18 size 100000 start 4 endBytes 3000 fct 187.22 sent 9000 0 rate 4.27306 cwnd 6000 alpha 0
+LiveFlow src17 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src16 size 100000 start 6 endBytes 1500 fct 283.947 sent 6000 0 rate 2.81742 cwnd 4500 alpha 0
+LiveFlow src5 size 100000 start 2 endBytes 6000 fct 132.282 sent 15000 0 rate 6.04769 cwnd 9000 alpha 0
+LiveFlow src4 size 100000 start 5 endBytes 4500 fct 117.493 sent 12000 0 rate 6.80892 cwnd 7500 alpha 0
+LiveFlow src3 size 100000 start 4 endBytes 3000 fct 186.465 sent 9000 0 rate 4.29034 cwnd 6000 alpha 0
+LiveFlow src2 size 100000 start 4 endBytes 4500 fct 142.173 sent 12000 0 rate 5.62693 cwnd 7500 alpha 0
+LiveFlow src0 size 100000 start 6 endBytes 1500 fct 284.003 sent 6000 0 rate 2.81687 cwnd 4500 alpha 0
+LiveFlow src1 size 100000 start 2 endBytes 7500 fct 106.809 sent 18000 0 rate 7.49003 cwnd 10500 alpha 0
+LiveFlow src6 size 100000 start 2 endBytes 6000 fct 127.735 sent 15000 0 rate 6.26297 cwnd 9000 alpha 0
+LiveFlow src7 size 100000 start 6 endBytes 1500 fct 276.653 sent 6000 0 rate 2.8917 cwnd 4500 alpha 0
+LiveFlow src8 size 100000 start 2 endBytes 6000 fct 129.405 sent 15000 0 rate 6.18214 cwnd 9000 alpha 0
+LiveFlow src9 size 100000 start 4 endBytes 3000 fct 194.435 sent 9000 0 rate 4.11448 cwnd 6000 alpha 0
+LiveFlow src10 size 100000 start 6 endBytes 3000 fct 143.884 sent 9000 0 rate 5.56004 cwnd 6000 alpha 0
+LiveFlow src11 size 100000 start 5 endBytes 3000 fct 177.784 sent 9000 0 rate 4.49984 cwnd 6000 alpha 0
+LiveFlow src12 size 100000 start 4 endBytes 3000 fct 194.044 sent 9000 0 rate 4.12278 cwnd 6000 alpha 0
+LiveFlow src13 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src14 size 100000 start 6 endBytes 1500 fct 274.43 sent 6000 0 rate 2.91513 cwnd 4500 alpha 0
+LiveFlow src15 size 100000 start 5 endBytes 1500 fct 341.118 sent 6000 0 rate 2.34523 cwnd 4500 alpha 0
+LiveFlow src36 size 100000 start 6 endBytes 1500 fct 248.438 sent 6000 0 rate 3.22012 cwnd 4500 alpha 0
+LiveFlow src37 size 100000 start 6 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src38 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src39 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src40 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src41 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src42 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src43 size 100000 start 10 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src44 size 100000 start 6 endBytes 1500 fct 264.619 sent 6000 0 rate 3.02321 cwnd 4500 alpha 0
+LiveFlow src45 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src46 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src47 size 100000 start 9 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src48 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src49 size 100000 start 10 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src50 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src51 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src52 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src53 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src54 size 100000 start 10 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src55 size 100000 start 10 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src56 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src57 size 100000 start 7 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src58 size 100000 start 12 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src59 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src60 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src61 size 100000 start 8 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src62 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src63 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src64 size 100000 start 13 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src65 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src66 size 100000 start 12 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src67 size 100000 start 10 endBytes 0 fct 0 sent 3000 0 rate 0 cwnd 3000 alpha 0
+LiveFlow src68 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src69 size 100000 start 10 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src70 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src71 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src72 size 100000 start 13 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src73 size 100000 start 14 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src74 size 100000 start 14 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src75 size 100000 start 12 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src76 size 100000 start 12 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0
+LiveFlow src77 size 100000 start 11 endBytes 0 fct 0 sent 0 0 rate 0 cwnd 0 alpha 0

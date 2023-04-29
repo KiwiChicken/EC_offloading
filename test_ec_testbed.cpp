@@ -11,18 +11,19 @@
 #include "prof.h"
 #include "conga-topology.h"
 
-namespace ec {
+namespace ec_raw {
     CongaTopology topo;
     int generateRandomRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst);
+    int genDstRoutes(int fpga_id, std::vector<ec_route::flow_info_t> &flows);
 }
 
 using namespace std;
-using namespace ec;
+using namespace ec_raw;
 
 void
 ec_testbed(const ArgList &args, Logfile &logfile)
 {
-    double Duration = 0.1;
+    double Duration = 0.0001;
     double Utilization = 0.9;
     uint32_t AvgFlowSize = 100000;
     string QueueType = "droptail";
@@ -38,6 +39,7 @@ ec_testbed(const ArgList &args, Logfile &logfile)
 
     // Aggregation to core switches and vice-versa.
     topo.genTopology(QueueType, logfile);
+    ec_route::genRoutes = &genDstRoutes;
 
     DataSource::EndHost eh = DataSource::TCP;
     Workloads::FlowDist fd  = Workloads::ERASURE_CODING;
@@ -66,7 +68,7 @@ ec_testbed(const ArgList &args, Logfile &logfile)
 // in base case, flows directly go from client(src) to storage server(dst)
 // modify src and dst here to change workload
 int
-ec::generateRandomRoute(route_t *&fwd,
+ec_raw::generateRandomRoute(route_t *&fwd,
                               route_t *&rev,
                               uint32_t &src,
                               uint32_t &dst)
@@ -103,7 +105,6 @@ ec::generateRandomRoute(route_t *&fwd,
     rev->push_back(topo.pServerLeaf[dst_tree][dst_server]);
 
     if (src_tree != dst_tree) {
-        // core = get_best_lbtag(src, dst);
         fwd->push_back(topo.qLeafCore[core][src_tree]);
         fwd->push_back(topo.pLeafCore[core][src_tree]);
 
@@ -124,4 +125,28 @@ ec::generateRandomRoute(route_t *&fwd,
     rev->push_back(topo.pLeafServer[src_tree][src_server]);
 
     return core;
+}
+
+
+int
+ec_raw::genDstRoutes(int fpga_id, std::vector<ec_route::flow_info_t> &flows) {
+    for (int i = 0; i < ec_route::EC_N; i++) {
+        auto route_fwd = new route_t();
+        auto route_rcv = new route_t();
+
+        auto queue_fwd = topo.qServerLeaf[0][0];//new Queue(10000000000, 8192000, NULL);
+        auto pipe_fwd = topo.pServerLeaf[0][0];//new Pipe(0.1);
+        auto queue_rcv = topo.qServerLeaf[0][0];//new Queue(10000000000, 8192000, NULL);
+        auto pipe_rcv = topo.pServerLeaf[0][0];//new Pipe(0.1);
+
+        route_fwd->push_back(queue_fwd);
+        route_fwd->push_back(pipe_fwd);
+        route_rcv->push_back(queue_rcv);
+        route_rcv->push_back(pipe_rcv);
+
+        flows.emplace_back(route_fwd, route_rcv, i);
+    }
+
+
+    return 0;
 }

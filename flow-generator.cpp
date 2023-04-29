@@ -169,6 +169,11 @@ FlowGenerator::createFlow(uint64_t flowSize,
             snk = new TimelySink();
             break;
 
+        case DataSource::EC_OFFLOAD:
+            src = new EcToFPGASrc(NULL, flowSize, 0);
+            snk = new EcToFPGASink();
+            break;
+
         default: { // TCP variant
                      // TODO: option to supply logtcp.
                      src = new TcpSrc(NULL, NULL, flowSize);

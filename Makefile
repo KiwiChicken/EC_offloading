@@ -9,7 +9,7 @@ $(shell mkdir -p $(OBJDIR) > /dev/null)
 $(shell mkdir -p $(DEPDIR) > /dev/null)
 $(shell mkdir -p $(DATADIR) > /dev/null)
 
-CXX = clang++
+CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -g
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@

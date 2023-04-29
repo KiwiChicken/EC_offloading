@@ -2,27 +2,85 @@
 
 using namespace std;
 
+int (*ec_route::genRoutes)(int, std::vector<ec_route::flow_info_t>&);
+
 void EcToFPGASrc::printStatus() {
-    // TcpSrc::printStatus();
+    TcpSrc::printStatus();
 }
 
 void EcToFPGASrc::doNextEvent() {
-    // TcpSrc::doNextEvent();
-    _src->sendOnePacket();
-    EventList::Get().sourceIsPendingRel(*this, timeFromUs(MIN_RTO_US));
+    // do not clean up before the sink completes
+    simtime_picosec current_ts = EventList::Get().now();
+    auto sink = static_cast<EcToFPGASink*>(_sink);
+    if (_state == FINISH && !sink->isFinished()) {
+        _state = PENDING;
+        sink->broadcastEc();
+    }
+    if (sink->isFinished()) {
+        _state = FINISH;
+    }
+    TcpSrc::doNextEvent();
 }
 
 void EcToFPGASrc::receivePacket(Packet &pkt) {
-    // TcpSrc::receivePacket(pkt);
+    TcpSrc::receivePacket(pkt);
 }
 
 void EcToFPGASink::receivePacket(Packet &pkt) {
-    // TODO: send one packet to the corresponding dst
-    // TcpSink::receivePacket(pkt);
+    auto p = static_cast<DataPacket*>(&pkt);
+    auto seqno = p->seqno();
+
+    // std::cout << "FPGA " << _node_id << " got packet " << seqno << " at " << EventList::Get().now()
+    //     << " current memory usage " << _mem_usage << " most recent packet seen " << _highest_received << std::endl;
+
+    // if duplicate, ack and return
+    if (seqno <= _highest_received) {    
+        TcpSink::receivePacket(pkt);
+        return;
+    } else if (_highest_received != 0 && seqno != _highest_received + MSS_BYTES) {
+        return;
+    }
+
+    // if we do not have enough memory limit, drop packet
+    if (_mem_limit != 0 && _mem_usage + pkt.size() > _mem_limit) {
+        std::cout << "reaching memory limit" << std::endl;
+        return;
+    }
+
+    _highest_received = seqno;
+    _mem_usage += pkt.size();
+
+    TcpSink::receivePacket(pkt);
+    _forwarding[_pkt_count]->sendOnePacket();
+    _pkt_count = (_pkt_count + 1) % ec_route::EC_K;
+    if (_pkt_count == 0) {
+        broadcastEc();
+    }
 }
 
-void EcToFPGASink::printStatus() {
-    // TODO
+void EcToFPGASink::doNextEvent() {
+    for (int i = ec_route::EC_K; i < ec_route::EC_N; i++) 
+        _forwarding[i]->sendOnePacket();
+    _mem_usage -= ec_route::EC_K * MSS_BYTES; // FIXME: store pkt size in variables
+    _pending_events --;
+    auto src = static_cast<EcToFPGASrc*>(_src);
+    if (src->_state == TcpSrc::PENDING && _pending_events == 0) {
+        for (auto route : _forwarding) {
+            route->_complete = true;
+        }
+    }
+}
+
+void EcToFPGASink::broadcastEc() {
+    if (_exec_time == 0) {
+        doNextEvent();
+    } else {
+        simtime_picosec current_ts = EventList::Get().now();
+        _next_idle = std::max(current_ts, _next_idle) + _exec_time;
+        _pending_events ++;
+        // std::cout << "Next EC broadcast round scheduled at " << _next_idle << std::endl;
+        EventList::Get().sourceIsPending(*this, _next_idle);
+    }
 }
 
 // =========================================================
@@ -90,7 +148,7 @@ void EcFromFPGASrc::sendOnePacket() {
     _highest_sent += _pkt_size;
     _packets_sent += _pkt_size;
 
-    std::cout << str() << "Sending packet with seq " << p->seqno() << std::endl;
+    // std::cout << str() << " Sending packet with seq " << p->seqno() << " at " << current_ts << std::endl;
     p->sendOn();
 
     if (_RFC2988_RTO_timeout == 0) { // RFC2988 5.1
@@ -130,9 +188,6 @@ void EcFromFPGASrc::doNextEvent() {
 
     else if (_complete && _pending_pkts == 0 && _flow._nPackets == 0) {
         _state = FINISH;
-        delete _sink;
-        delete _route_fwd;
-        delete _route_rev;
         return;
     }
 
@@ -184,7 +239,7 @@ void EcFromFPGASrc::receivePacket(Packet &pkt) {
     pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_RCVDESTROY);
     p->free();
 
-    std::cout << str() << "Receiving ack with seq " << seqno << std::endl;
+    // std::cout << str() << " Receiving ack with seq " << seqno << " at " << current_ts << std::endl;
 
     if (seqno < _last_acked) {
         cout << "ACK from the past: seqno " << seqno << " _last_acked " << _last_acked << endl;
@@ -208,7 +263,7 @@ void EcFromFPGASink::receivePacket(Packet &pkt) {
     pkt.flow().logTraffic(pkt, *this, TrafficLogger::PKT_RCVDESTROY);
     p->free();
 
-    std::cout << str() << "Receiving packet with seq " << seqno << std::endl;
+    // std::cout << str() << " Receiving packet with seq " << seqno << " at " << EventList::Get().now() << std::endl;
 
     DataAck *ack = DataAck::newpkt(_src->_flow, *_route, 1, seqno);
     ack->flow().logTraffic(*ack, *this, TrafficLogger::PKT_CREATESEND);
