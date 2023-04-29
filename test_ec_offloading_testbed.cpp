@@ -9,7 +9,8 @@
 #include "pipe.h"
 #include "test.h"
 #include "prof.h"
-#include "conga-topology.h"
+#include "ec_offload_route.h"
+#include "ec_offload.h"
 
 namespace ec_offload {
     CongaTopology topo;
@@ -20,47 +21,63 @@ using namespace std;
 using namespace ec_offload;
 
 void
-conga_testbed(const ArgList &args, Logfile &logfile)
+ec_offload_testbed(const ArgList &args, Logfile &logfile)
 {
-    double Duration = 0.1;
-    double Utilization = 0.9;
-    uint32_t AvgFlowSize = 100000;
-    string QueueType = "droptail";
-    string calq = "cq";
-    string fairqueue = "fq";
-    string FlowDist = "uniform";
+    // double Duration = 0.1;
+    // double Utilization = 0.9;
+    // uint32_t AvgFlowSize = 100000;
+    // string QueueType = "droptail";
+    // string calq = "cq";
+    // string fairqueue = "fq";
+    // string FlowDist = "uniform";
 
-    parseDouble(args, "duration", Duration);
-    parseInt(args, "flowsize", AvgFlowSize);
-    parseDouble(args, "utilization", Utilization);
-    parseString(args, "queue", QueueType);
-    parseString(args, "flowdist", FlowDist);
+    // parseDouble(args, "duration", Duration);
+    // parseInt(args, "flowsize", AvgFlowSize);
+    // parseDouble(args, "utilization", Utilization);
+    // parseString(args, "queue", QueueType);
+    // parseString(args, "flowdist", FlowDist);
 
-    // Aggregation to core switches and vice-versa.
-    topo.genTopology(QueueType, logfile);
+    // // Aggregation to core switches and vice-versa.
+    // topo.genTopology(QueueType, logfile);
 
-    DataSource::EndHost eh = DataSource::EC_OFFLOAD;
-    Workloads::FlowDist fd  = Workloads::ERASURE_CODING;
+    // DataSource::EndHost eh = DataSource::EC_OFFLOAD;
+    // Workloads::FlowDist fd  = Workloads::ERASURE_CODING;
 
-    if (FlowDist == "pareto") {
-        fd = Workloads::PARETO;
-    } else if (FlowDist == "enterprise") {
-        fd = Workloads::ENTERPRISE;
-    } else if (FlowDist == "datamining") {
-        fd = Workloads::DATAMINING;
-    }  else if (FlowDist == "erasure_coding") {
-        fd = Workloads::ERASURE_CODING;
-    } else {
-        fd = Workloads::UNIFORM;
-    }
+    // if (FlowDist == "pareto") {
+    //     fd = Workloads::PARETO;
+    // } else if (FlowDist == "enterprise") {
+    //     fd = Workloads::ENTERPRISE;
+    // } else if (FlowDist == "datamining") {
+    //     fd = Workloads::DATAMINING;
+    // }  else if (FlowDist == "erasure_coding") {
+    //     fd = Workloads::ERASURE_CODING;
+    // } else {
+    //     fd = Workloads::UNIFORM;
+    // }
 
-    // Calculate background traffic utilization.
-    double bg_flow_rate = Utilization * (CongaTopology::LEAF_SPEED * CongaTopology::N_SERVER * CongaTopology::N_LEAF);
+    // // Calculate background traffic utilization.
+    // double bg_flow_rate = Utilization * (CongaTopology::LEAF_SPEED * CongaTopology::N_SERVER * CongaTopology::N_LEAF);
 
-    FlowGenerator *bgFlowGen = new FlowGenerator(eh, generateRandomRoute, bg_flow_rate, AvgFlowSize, fd);
-    bgFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
+    // FlowGenerator *bgFlowGen = new FlowGenerator(eh, generateRandomRoute, bg_flow_rate, AvgFlowSize, fd);
+    // bgFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
 
-    EventList::Get().setEndtime(timeFromSec(Duration));
+    // EventList::Get().setEndtime(timeFromSec(Duration));
+
+    auto start = EventList::Get().now() + 1;
+    auto src = new EcToFPGASrc(NULL);
+    auto dst = new EcToFPGASink();
+
+    src->setName("src");
+    dst->setName("dst");
+    src->_node_id = 0;
+    src->_node_id = 1;
+
+    auto route_fwd = new route_t();
+    auto route_rcv = new route_t();
+    route_fwd->push_back(dst);
+    route_rcv->push_back(src);
+
+    src->connect(start, *route_fwd, *route_rcv, *dst);
 }
 
 // in FPGA/core-agg offload case, flows go from client(src) to storage server(dst)
@@ -131,4 +148,12 @@ ec_offload::generateRandomRoute(route_t *&fwd,
     rev->push_back(topo.pLeafServer[src_tree][src_server]);
 
     return core;
+}
+
+int
+ec_offload::genDstRoutes(std::vector<flow_info_t> &flows) {
+// TODO
+    std::cout << "hello" << std::endl;
+    flows.emplace_back(new route_t(), new route_t(), 0);
+    std::cout << "added new record" << std::endl;
 }

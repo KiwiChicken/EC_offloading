@@ -16,6 +16,8 @@ typedef std::unordered_map<std::string,std::string> ArgList;
 void single_link_simulation(const ArgList &, Logfile &);
 void conga_testbed(const ArgList &, Logfile &);
 void fat_tree_testbed(const ArgList &, Logfile &);
+void ec_testbed(const ArgList &, Logfile &);
+void ec_offload_testbed(const ArgList &, Logfile &);
 
 inline int 
 run_experiment(uint32_t expt,
@@ -36,6 +38,14 @@ run_experiment(uint32_t expt,
         case 3: 
             // Run a fat-tree topology
             fat_tree_testbed(args, logfile);
+            break;
+
+        case 4:
+            ec_testbed(args, logfile);
+            break;
+
+        case 5:
+            ec_offload_testbed(args, logfile);
             break;
 
         default:

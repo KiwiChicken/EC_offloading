@@ -7,6 +7,9 @@
 #include "priorityqueue.h"
 #include "stoc-fairqueue.h"
 
+#ifndef CONGA_H_
+#define CONGA_H_
+
 class CongaTopology {
 
 public: 
@@ -42,3 +45,5 @@ public:
 private: 
     void createQueue(std::string &qType, Queue *&queue, uint64_t speed, uint64_t buffer, Logfile &lf);
 };
+
+#endif

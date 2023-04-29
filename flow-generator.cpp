@@ -181,10 +181,6 @@ FlowGenerator::createFlow(uint64_t flowSize,
                      if (_endhost == DataSource::D_TCP || _endhost == DataSource::D_DCTCP) {
                          src->_enable_deadline = true;
                      }
-
-                     if (_endhost == DataSource::EC_OFFLOAD) {
-                         TcpSrc::_ec_offload = true;
-                     }
                  }
     }
 

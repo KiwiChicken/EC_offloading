@@ -77,10 +77,10 @@ class TcpSink : public DataSink
     static std::map<uint64_t, uint64_t> slacks;
     static uint64_t totalPkts;
 
-    static bool _ec_offload;
+    // static bool _ec_offload;
 
     private:
-    void processECPacket(DataPacket &pkt);
+    // void processECPacket(DataPacket &pkt);
 };
 
 #endif /* TCP_H_ */

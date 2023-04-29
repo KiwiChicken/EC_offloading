@@ -20,7 +20,7 @@ using namespace std;
 using namespace ec;
 
 void
-conga_testbed(const ArgList &args, Logfile &logfile)
+ec_testbed(const ArgList &args, Logfile &logfile)
 {
     double Duration = 0.1;
     double Utilization = 0.9;
