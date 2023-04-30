@@ -40,10 +40,25 @@ public:
     Pipe  *pServerLeaf[N_LEAF][N_SERVER];
     Queue *qServerLeaf[N_LEAF][N_SERVER];
 
-    void genTopology(std::string &queueType, Logfile &logfile);
+    // Pipe  *pFPGACore[N_CORE];
+    // Queue *qFPGACore[N_CORE];
+
+    // Pipe  *pCoreFPGA[N_CORE];
+    // Queue *qCoreFPGA[N_CORE];
+    Pipe  *pToFPGA[N_CORE];
+    Queue *qToFPGA[N_CORE];
+
+    Pipe  *pFromFPGA[N_CORE];
+    Queue *qFromFPGA[N_CORE];
+
+    //TODO: decide core-fpga params
+
+    void genTopology(bool is_ec_offload, std::string &queueType, Logfile &logfile);
+    
 
 private: 
     void createQueue(std::string &qType, Queue *&queue, uint64_t speed, uint64_t buffer, Logfile &lf);
+    void genFPGA(bool is_ec_offload, std::string &queueType, Logfile &logfile);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "conga-topology.h"
 
-void CongaTopology::genTopology(std::string &queueType, Logfile &logfile) {
+void CongaTopology::genTopology(bool is_ec_offload, std::string &queueType, Logfile &logfile) {
     // connect all cores to leaves
     for (int i = 0; i < N_CORE; i++) {
         for (int j = 0; j < N_LEAF; j++) {
@@ -21,7 +21,7 @@ void CongaTopology::genTopology(std::string &queueType, Logfile &logfile) {
 
             // createPipe(pipeType, pCoreLeaf[i][j], LINK_DELAY);
             pCoreLeaf[i][j] = new Pipe(LINK_DELAY);
-            pCoreLeaf[i][j]->setName("p-leaf-core-" + std::to_string(i) + "-" + std::to_string(j));
+            pCoreLeaf[i][j]->setName("p-core-leaf-" + std::to_string(i) + "-" + std::to_string(j));
             logfile.writeName(*(pCoreLeaf[i][j]));
         }
     }
@@ -50,6 +50,58 @@ void CongaTopology::genTopology(std::string &queueType, Logfile &logfile) {
             logfile.writeName(*(pServerLeaf[i][j]));
         }
     }
+
+    genFPGA(is_ec_offload, queueType, logfile);
+}
+
+// FIXME: for now, usign same params as core-leaf
+void CongaTopology::genFPGA(bool is_ec_offload, std::string &queueType, Logfile &logfile) {
+    if (is_ec_offload) {
+        // connect FPGA to core
+        for (int i = 0; i < N_CORE; i++) {
+            // Uplink
+            createQueue(queueType, qToFPGA[i], CORE_SPEED, LEAF_BUFFER, logfile);
+            qToFPGA[i]->setName("q-core-fpga-" + std::to_string(i));
+            logfile.writeName(*(qToFPGA[i]));
+
+            pToFPGA[i] = new Pipe(LINK_DELAY);
+            pToFPGA[i]->setName("p-core-fpga-" + std::to_string(i));
+            logfile.writeName(*(pToFPGA[i]));
+
+            // Downlink
+            createQueue(queueType, qFromFPGA[i], CORE_SPEED, CORE_BUFFER, logfile);
+            qFromFPGA[i]->setName("q-fpga-core-" + std::to_string(i));
+            logfile.writeName(*(qFromFPGA[i]));
+
+            // createPipe(pipeType, pCoreLeaf[i][j], LINK_DELAY);
+            pFromFPGA[i] = new Pipe(LINK_DELAY);
+            pFromFPGA[i]->setName("p-fpga-core-" + std::to_string(i));
+            logfile.writeName(*(pFromFPGA[i]));
+        }
+    }
+    else {
+        // TODO: 
+        // connect FPGA to srcHost
+        // workload fix src traffic from only one server
+        // SHOULD NOT USE ANY FPGA QUERUE/PIPE THIS CASE!
+        
+        // createQueue(queueType, qToFPGA[0], CORE_SPEED, LEAF_BUFFER, logfile);
+        // qToFPGA[0]->setName("q-core-fpga-" + std::to_string(0));
+        // logfile.writeName(*(qToFPGA[0]));
+
+        // pToFPGA[i] = new Pipe(LINK_DELAY);
+        // pToFPGA[i]->setName("p-core-fpga-" + std::to_string(0));
+        // logfile.writeName(*(pToFPGA[0]));
+
+        // createQueue(queueType, qFromFPGA[0], CORE_SPEED, CORE_BUFFER, logfile);
+        // qFromFPGA[0]->setName("q-fpga-core-" + std::to_string(0));
+        // logfile.writeName(*(qFromFPGA[0]));
+
+        // pFromFPGA[0] = new Pipe(LINK_DELAY);
+        // pFromFPGA[0]->setName("p-fpga-core-" + std::to_string(0));
+        // logfile.writeName(*(pFromFPGA[0]));
+    }
+    
 }
 
 void CongaTopology::createQueue(std::string &qType,
