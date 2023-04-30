@@ -119,7 +119,7 @@ class EcToFPGASink : public TcpSink, public EventSource
     friend class EcToFPGASrc;
 
 public:
-    EcToFPGASink(simtime_picosec exec_time = 0, uint64_t mem = 0) : 
+    EcToFPGASink(uint32_t _node_id, simtime_picosec exec_time = 0, uint64_t mem = 0) : 
         TcpSink(), 
         EventSource("EcToFPGASink"),
         _pkt_count(0),
@@ -131,7 +131,6 @@ public:
         _highest_received(0),
         _forwarding()
     {
-        // TODO: initialize forwarding table
         simtime_picosec current_ts = EventList::Get().now();
 
         auto flow_routes = std::vector<ec_route::flow_info_t>(); 

@@ -56,6 +56,7 @@ void CongaTopology::genTopology(bool is_ec_offload, std::string &queueType, Logf
 
 // FIXME: for now, usign same params as core-leaf
 void CongaTopology::genFPGA(bool is_ec_offload, std::string &queueType, Logfile &logfile) {
+    // only used when there is offloading
     if (is_ec_offload) {
         // connect FPGA to core
         for (int i = 0; i < N_CORE; i++) {
@@ -78,28 +79,6 @@ void CongaTopology::genFPGA(bool is_ec_offload, std::string &queueType, Logfile 
             pFromFPGA[i]->setName("p-fpga-core-" + std::to_string(i));
             logfile.writeName(*(pFromFPGA[i]));
         }
-    }
-    else {
-        // TODO: 
-        // connect FPGA to srcHost
-        // workload fix src traffic from only one server
-        // SHOULD NOT USE ANY FPGA QUERUE/PIPE THIS CASE!
-        
-        // createQueue(queueType, qToFPGA[0], CORE_SPEED, LEAF_BUFFER, logfile);
-        // qToFPGA[0]->setName("q-core-fpga-" + std::to_string(0));
-        // logfile.writeName(*(qToFPGA[0]));
-
-        // pToFPGA[i] = new Pipe(LINK_DELAY);
-        // pToFPGA[i]->setName("p-core-fpga-" + std::to_string(0));
-        // logfile.writeName(*(pToFPGA[0]));
-
-        // createQueue(queueType, qFromFPGA[0], CORE_SPEED, CORE_BUFFER, logfile);
-        // qFromFPGA[0]->setName("q-fpga-core-" + std::to_string(0));
-        // logfile.writeName(*(qFromFPGA[0]));
-
-        // pFromFPGA[0] = new Pipe(LINK_DELAY);
-        // pFromFPGA[0]->setName("p-fpga-core-" + std::to_string(0));
-        // logfile.writeName(*(pFromFPGA[0]));
     }
     
 }

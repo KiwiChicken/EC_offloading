@@ -171,7 +171,7 @@ FlowGenerator::createFlow(uint64_t flowSize,
 
         case DataSource::EC_OFFLOAD:
             src = new EcToFPGASrc(NULL, flowSize, 0);
-            snk = new EcToFPGASink();
+            snk = new EcToFPGASink(dst_node);
             break;
 
         default: { // TCP variant
