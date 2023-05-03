@@ -5,6 +5,8 @@
 
 using namespace std;
 
+double ec_route::ec_chance = 1.0;
+
 FlowGenerator::FlowGenerator(DataSource::EndHost endhost, 
                              route_gen_t rg,
                              linkspeed_bps flowRate, 
@@ -140,10 +142,12 @@ void
 FlowGenerator::createFlow(uint64_t flowSize, 
                           simtime_picosec startTime)
 {
+    const uint32_t rand_seed = rand();
+
     // Generate a random route.
     route_t *routeFwd = NULL, *routeRev = NULL;
     uint32_t src_node = 0, dst_node = 0;
-    _routeGen(routeFwd, routeRev, src_node, dst_node);
+    _routeGen(routeFwd, routeRev, src_node, dst_node, rand_seed);
 
     // Generate next start time adding jitter.
     simtime_picosec start_time = EventList::Get().now() + startTime + llround(drand() * timeFromUs(5));
@@ -170,8 +174,13 @@ FlowGenerator::createFlow(uint64_t flowSize,
             break;
 
         case DataSource::EC_OFFLOAD:
-            src = new EcToFPGASrc(NULL, flowSize, 0);
-            snk = new EcToFPGASink(dst_node);
+            if (rand_seed < ec_route::ec_chance * RAND_MAX) {
+                src = new EcToFPGASrc(NULL, flowSize, 0);
+                snk = new EcToFPGASink(dst_node, flowSize);
+            } else {
+                src = new TcpSrc(NULL, NULL, flowSize);
+                snk = new TcpSink();
+            }
             break;
 
         default: { // TCP variant

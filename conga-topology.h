@@ -27,6 +27,7 @@ public:
     constexpr static uint64_t CORE_SPEED = 40000000000; // 40gbps
 
     constexpr static double LINK_DELAY = 0.1; // in microsec
+    constexpr static double PCIe_DELAY = 0.0005; // 500 ns
 
     Pipe  *pCoreLeaf[N_CORE][N_LEAF];
     Queue *qCoreLeaf[N_CORE][N_LEAF];

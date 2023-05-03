@@ -27,7 +27,7 @@ class DataSource : public EventSource, public PacketSink
             D_DCTCP,  // Deadline DCTCP
             PKTPAIR,  // Packet pair
             TIMELY,
-            EC_OFFLOAD
+            EC_OFFLOAD,
         };
 
         virtual void printStatus() = 0;

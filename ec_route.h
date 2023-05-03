@@ -21,6 +21,9 @@ namespace ec_route {
 
     } flow_info_t;
 
+    extern double ec_chance;
+    extern simtime_picosec ec_exec_time;
+    extern uint64_t fpga_mem_limit;
     extern int (*genRoutes)(int, std::vector<flow_info_t>&);
 };
 

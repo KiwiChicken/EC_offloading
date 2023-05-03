@@ -1,6 +1,13 @@
 #include "ec_offload.h"
+#include "conga-topology.h"
 
 using namespace std;
+
+simtime_picosec ec_route::ec_exec_time;
+uint64_t ec_route::fpga_mem_limit;
+
+simtime_picosec next_idle_time[CongaTopology::N_CORE];
+uint64_t mem_usage[CongaTopology::N_CORE];
 
 int (*ec_route::genRoutes)(int, std::vector<ec_route::flow_info_t>&);
 
@@ -42,13 +49,14 @@ void EcToFPGASink::receivePacket(Packet &pkt) {
     }
 
     // if we do not have enough memory limit, drop packet
-    if (_mem_limit != 0 && _mem_usage + pkt.size() > _mem_limit) {
+    if (ec_route::fpga_mem_limit != 0 && mem_usage[_node_id] + pkt.size() > ec_route::fpga_mem_limit) {
         std::cout << "reaching memory limit" << std::endl;
         return;
     }
 
     _highest_received = seqno;
-    _mem_usage += pkt.size();
+    if (ec_route::fpga_mem_limit != 0)
+        mem_usage[_node_id] += pkt.size();
 
     TcpSink::receivePacket(pkt);
     _forwarding[_pkt_count]->sendOnePacket();
@@ -61,7 +69,8 @@ void EcToFPGASink::receivePacket(Packet &pkt) {
 void EcToFPGASink::doNextEvent() {
     for (int i = ec_route::EC_K; i < ec_route::EC_N; i++) 
         _forwarding[i]->sendOnePacket();
-    _mem_usage -= ec_route::EC_K * MSS_BYTES; // FIXME: store pkt size in variables
+    if (ec_route::fpga_mem_limit != 0)
+        mem_usage[_node_id] -= ec_route::EC_K * MSS_BYTES; // FIXME: store pkt size in variables
     _pending_events --;
     auto src = static_cast<EcToFPGASrc*>(_src);
     if (src->_state == TcpSrc::PENDING && _pending_events == 0) {
@@ -72,14 +81,14 @@ void EcToFPGASink::doNextEvent() {
 }
 
 void EcToFPGASink::broadcastEc() {
-    if (_exec_time == 0) {
+    if (ec_route::ec_exec_time == 0) {
         doNextEvent();
     } else {
         simtime_picosec current_ts = EventList::Get().now();
-        _next_idle = std::max(current_ts, _next_idle) + _exec_time;
+        next_idle_time[_node_id] = std::max(current_ts, next_idle_time[_node_id]) + ec_route::ec_exec_time;
         _pending_events ++;
         // std::cout << "Next EC broadcast round scheduled at " << _next_idle << std::endl;
-        EventList::Get().sourceIsPending(*this, _next_idle);
+        EventList::Get().sourceIsPending(*this, next_idle_time[_node_id]);
     }
 }
 
@@ -192,7 +201,7 @@ void EcFromFPGASrc::doNextEvent() {
     }
 
     else if (_RFC2988_RTO_timeout != 0 && current_ts >= _RFC2988_RTO_timeout) {
-
+        #if MING_PROF 
         cout << str() << " at " << timeAsMs(current_ts)
              << " RTO " << timeAsUs(_rto)
              << " MDEV " << timeAsUs(_mdev)
@@ -201,7 +210,7 @@ void EcFromFPGASrc::doNextEvent() {
              << " CWND "<< _cwnd / _pkt_size
              << " RTO_timeout " << timeAsMs(_RFC2988_RTO_timeout)
              << " STATE " << _state << endl;
-
+        #endif
         if (_state == FAST_RECOV) {
             uint32_t flightsize = _highest_sent - _last_acked;
             _cwnd = min(_ssthresh, flightsize + _pkt_size);
@@ -242,12 +251,21 @@ void EcFromFPGASrc::receivePacket(Packet &pkt) {
     // std::cout << str() << " Receiving ack with seq " << seqno << " at " << current_ts << std::endl;
 
     if (seqno < _last_acked) {
+        #if MING_PROF
         cout << "ACK from the past: seqno " << seqno << " _last_acked " << _last_acked << endl;
+        #endif
         return;
     }
 
     _last_acked = seqno;
-
+cout << setprecision(6) << "FPGAFlow " << str() << " " << id << " size " << _flowsize
+             << " start " << lround(timeAsUs(_start_time)) << " end " << lround(timeAsUs(current_ts))
+             << " fct " << timeAsUs(current_ts - _start_time)
+             << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
+             << " tput " << _flowsize * 8000.0 / (current_ts - _start_time)
+             << " rtt " << timeAsUs(_rtt)
+             << " cwnd " << _cwnd
+             << " alpha " << 0 << endl;
     // send next pkt as needed
     while (_pending_pkts > 0 && _last_acked + _cwnd >= _highest_sent + _pkt_size) {
         sendOnePacket();

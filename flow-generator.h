@@ -20,7 +20,7 @@
 #include <functional>
 
 /* Route generator function. */
-typedef std::function<void(route_t *&, route_t *&, uint32_t &, uint32_t &)> route_gen_t;
+typedef std::function<void(route_t *&, route_t *&, uint32_t &, uint32_t &, const uint32_t)> route_gen_t;
 
 class FlowGenerator : public EventSource
 {

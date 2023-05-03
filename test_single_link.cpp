@@ -12,7 +12,7 @@ namespace linksim {
     route_t routeFwd;
     route_t routeRev;
 
-    void generateRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst);
+    void generateRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst, const uint32_t _);
 }
 
 using namespace std;
@@ -134,7 +134,7 @@ void single_link_simulation(const ArgList &args, Logfile &logfile)
 }
 
 void
-linksim::generateRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst)
+linksim::generateRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst, const uint32_t _)
 {
     fwd = new route_t(routeFwd);
     rev = new route_t(routeRev);

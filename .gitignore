@@ -4,4 +4,7 @@
 
 htsim
 
+*.log
+*.csv
+
 /.vscode/

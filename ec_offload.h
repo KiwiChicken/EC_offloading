@@ -119,14 +119,10 @@ class EcToFPGASink : public TcpSink, public EventSource
     friend class EcToFPGASrc;
 
 public:
-    EcToFPGASink(uint32_t _node_id, simtime_picosec exec_time = 0, uint64_t mem = 0) : 
+    EcToFPGASink(uint32_t _node_id, uint32_t flowsize = 0) : 
         TcpSink(), 
         EventSource("EcToFPGASink"),
         _pkt_count(0),
-        _exec_time(exec_time),
-        _next_idle(0),
-        _mem_limit(mem),
-        _mem_usage(0),
         _pending_events(0),
         _highest_received(0),
         _forwarding()
@@ -137,7 +133,7 @@ public:
         ec_route::genRoutes(_node_id, flow_routes);
 
         for (auto route : flow_routes) {
-            EcFromFPGASrc *src = new EcFromFPGASrc(NULL);
+            EcFromFPGASrc *src = new EcFromFPGASrc(NULL, flowsize);
             EcFromFPGASink *dst = new EcFromFPGASink();
 
             src->setName(DataSink::str() + "->" + std::to_string(route.dst));
@@ -173,10 +169,6 @@ public:
 
 private:
     uint64_t _pending_events;
-    simtime_picosec _exec_time;
-    simtime_picosec _next_idle;
-    uint64_t _mem_limit;
-    uint64_t _mem_usage;
     uint64_t _pkt_count;
     uint64_t _highest_received;
     std::vector<EcFromFPGASrc*> _forwarding;
