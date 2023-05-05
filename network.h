@@ -49,12 +49,13 @@ class Packet
 
     inline void setPriority(uint32_t p) {_priority = p;}
     inline uint32_t getPriority() {return _priority;}
+    
+    route_t *_route;
 
     protected:
     void set(PacketFlow &flow, route_t &route, mem_b pkt_size, packetid_t id);
 
     PacketFlow *_flow;
-    route_t *_route;
     mem_b _size;
     packetid_t _id;
 

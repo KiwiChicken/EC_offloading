@@ -57,6 +57,8 @@ class TcpSrc : public DataSource
     static std::map<uint64_t, uint64_t> slacks;
     static uint64_t totalPkts;
 
+    bool _isTcpFlow = true;
+
     private:
     // Mechanism
     void inflateWindow();

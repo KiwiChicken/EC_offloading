@@ -10,7 +10,7 @@ $(shell mkdir -p $(DEPDIR) > /dev/null)
 $(shell mkdir -p $(DATADIR) > /dev/null)
 
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -g -fsanitize=address -Ofast
+CXXFLAGS = -std=c++11 -Wall -Wextra -Ofast
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 POSTCOMPILE = @mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 

@@ -46,6 +46,15 @@ ec_testbed(const ArgList &args, Logfile &logfile)
     ec_route::ec_exec_time = 0;
     ec_route::fpga_mem_limit = 0;
 
+
+    // uint32_t Ec_K = 7;
+    // uint32_t Ec_N = 12;
+    // parseInt(args, "K", Ec_K);
+    // parseInt(args, "N", Ec_N);
+
+    // ec_route::EC_K = (int)Ec_K;
+    // ec_route::EC_N = (int)Ec_N;
+
     // Aggregation to core switches and vice-versa.
     topo.genTopology(false, QueueType, logfile);
     ec_route::genRoutes = &genDstRoutes;
@@ -71,6 +80,26 @@ ec_testbed(const ArgList &args, Logfile &logfile)
     bgFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
 
     EventList::Get().setEndtime(timeFromSec(Duration));
+
+    // route_t *routeFwd = NULL, *routeRev = NULL;
+    // uint32_t src_node = 0, dst_node = 0;
+    // genEcRoute(routeFwd, routeRev, src_node, dst_node);
+
+    // DataSource *src = new EcToFPGASrc(NULL, 4500);
+    // DataSink *snk = new EcToFPGASink(dst_node);
+
+    // auto start_time = EventList::Get().now() + 10;
+
+    // src->setName("src");
+    // snk->setName("snk");
+    // src->_node_id = src_node;
+    // snk->_node_id = dst_node;
+
+    // src->setDeadline(start_time + timeFromSec((4500 * 8.0) / speedFromGbps(0.8)));
+
+    // routeFwd->push_back(snk);
+    // routeRev->push_back(src);
+    // src->connect(start_time, *routeFwd, *routeRev, *snk);
 }
 
 // current: colocated fpga so src == dst

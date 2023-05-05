@@ -5,8 +5,8 @@
 #define EC_ROUTE_H_
 
 namespace ec_route {
-    const int EC_K = 2;
-    const int EC_N = 3;
+    // const int EC_K = 24;
+    // const int EC_N = 28;
 
     typedef struct flow_info {
         route_t* fwd_route;
@@ -25,6 +25,8 @@ namespace ec_route {
     extern simtime_picosec ec_exec_time;
     extern uint64_t fpga_mem_limit;
     extern int (*genRoutes)(int, std::vector<flow_info_t>&);
+    const int EC_K = 3;
+    const int EC_N = 5;
 };
 
 #endif

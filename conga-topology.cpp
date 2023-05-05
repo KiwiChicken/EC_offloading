@@ -61,7 +61,7 @@ void CongaTopology::genFPGA(bool is_ec_offload, std::string &queueType, Logfile 
         // connect FPGA to core
         for (int i = 0; i < N_CORE; i++) {
             // Uplink
-            createQueue(queueType, qToFPGA[i], CORE_SPEED, LEAF_BUFFER, logfile);
+            createQueue(queueType, qToFPGA[i], CORE_SPEED*N_LEAF, LEAF_BUFFER, logfile);
             qToFPGA[i]->setName("q-core-fpga-" + std::to_string(i));
             logfile.writeName(*(qToFPGA[i]));
 
@@ -70,7 +70,7 @@ void CongaTopology::genFPGA(bool is_ec_offload, std::string &queueType, Logfile 
             logfile.writeName(*(pToFPGA[i]));
 
             // Downlink
-            createQueue(queueType, qFromFPGA[i], CORE_SPEED, CORE_BUFFER, logfile);
+            createQueue(queueType, qFromFPGA[i], CORE_SPEED*N_LEAF, CORE_BUFFER, logfile);
             qFromFPGA[i]->setName("q-fpga-core-" + std::to_string(i));
             logfile.writeName(*(qFromFPGA[i]));
 

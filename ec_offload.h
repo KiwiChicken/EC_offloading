@@ -104,7 +104,9 @@ class EcToFPGASrc : public TcpSrc
 
 public:
     EcToFPGASrc(TrafficLogger *pktlogger, uint32_t flowsize = 0, simtime_picosec duration = 0) : 
-        TcpSrc(NULL, pktlogger, flowsize, duration) {}
+        TcpSrc(NULL, pktlogger, flowsize, duration) {
+            _isTcpFlow = false;
+        }
 
     void printStatus();
     void doNextEvent();

@@ -53,14 +53,14 @@ TcpSrc::printStatus()
         estimated_fct = 0;
     }
 
-    cout << setprecision(6) << "LiveFlow " << str() << " size " << _flowsize
-         << " start " << lround(timeAsUs(_start_time))
-         << " endBytes " << _last_acked
-         << " fct " << timeAsUs(estimated_fct)
-         << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
-         << " rate " << _last_acked * 8000.0 / (current_ts - _start_time)
-         << " cwnd " << _cwnd
-         << " alpha " << _alpha << endl;
+    // cout << setprecision(6) << "LiveFlow " << str() << " size " << _flowsize
+    //      << " start " << lround(timeAsUs(_start_time))
+    //      << " endBytes " << _last_acked
+    //      << " fct " << timeAsUs(estimated_fct)
+    //      << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
+    //      << " rate " << _last_acked * 8000.0 / (current_ts - _start_time)
+    //      << " cwnd " << _cwnd
+    //      << " alpha " << _alpha << endl;
 }
 
 void
@@ -79,7 +79,7 @@ TcpSrc::doNextEvent()
     // Do not clean up right away
     else if (_state == PENDING) {
         if (_flow._nPackets == 0) {
-            return;
+            goto reschedule;
         }
     }
 
@@ -131,6 +131,7 @@ TcpSrc::doNextEvent()
     }
 
     // Schedule periodic RTT checks.
+reschedule: 
     if (_rtt != 0) {
         EventList::Get().sourceIsPendingRel(*this, _rtt);
     } else {
@@ -156,13 +157,15 @@ TcpSrc::receivePacket(Packet &pkt)
     if ((_flowsize > 0 && seqno >= _flowsize) ||
             (_duration > 0 && current_ts > _start_time + _duration)) {
 
-        if (_flowgen != NULL) {
+        if (_flowgen != NULL && _isTcpFlow) {
             _flowgen->finishFlow(id);
         }
         _state = FINISH;
 
         // Ming added _flowsize
-        cout << setprecision(6) << "Flow " << str() << " " << id << " size " << _flowsize
+        if (_isTcpFlow) {
+            cout << "Flow "; //background flow
+            cout  << setprecision(6)  << str() << " " << id << " size " << _flowsize
              << " start " << lround(timeAsUs(_start_time)) << " end " << lround(timeAsUs(current_ts))
              << " fct " << timeAsUs(current_ts - _start_time)
              << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
@@ -170,6 +173,7 @@ TcpSrc::receivePacket(Packet &pkt)
              << " rtt " << timeAsUs(_rtt)
              << " cwnd " << _cwnd
              << " alpha " << _alpha << endl;
+        }
 
         return;
     }

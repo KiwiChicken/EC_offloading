@@ -3,11 +3,11 @@
 
 using namespace std;
 
-simtime_picosec ec_route::ec_exec_time;
-uint64_t ec_route::fpga_mem_limit;
+simtime_picosec ec_route::ec_exec_time = 0;
+uint64_t ec_route::fpga_mem_limit = 0;
 
-simtime_picosec next_idle_time[CongaTopology::N_CORE];
-uint64_t mem_usage[CongaTopology::N_CORE];
+simtime_picosec next_idle_time[CongaTopology::N_CORE] = {};
+uint64_t mem_usage[CongaTopology::N_CORE] = {};
 
 int (*ec_route::genRoutes)(int, std::vector<ec_route::flow_info_t>&);
 
@@ -24,6 +24,14 @@ void EcToFPGASrc::doNextEvent() {
         sink->broadcastEc();
     }
     if (sink->isFinished()) {
+        cout << setprecision(6) << "FPGAFlow " << str() << " " << id << " size " << _flowsize
+             << " start " << lround(timeAsUs(_start_time)) << " end " << lround(timeAsUs(current_ts))
+             << " fct " << timeAsUs(current_ts - _start_time)
+             << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
+             << " tput " << _flowsize * 8000.0 / (current_ts - _start_time) << endl;
+        if (_flowgen != NULL) {
+            _flowgen->finishFlow(id);
+        }
         _state = FINISH;
     }
     TcpSrc::doNextEvent();
@@ -37,8 +45,7 @@ void EcToFPGASink::receivePacket(Packet &pkt) {
     auto p = static_cast<DataPacket*>(&pkt);
     auto seqno = p->seqno();
 
-    // std::cout << "FPGA " << _node_id << " got packet " << seqno << " at " << EventList::Get().now()
-    //     << " current memory usage " << _mem_usage << " most recent packet seen " << _highest_received << std::endl;
+    // std::cout << "FPGA " << _node_id << " got packet " << seqno << " at " << EventList::Get().now() << endl;
 
     // if duplicate, ack and return
     if (seqno <= _highest_received) {    
@@ -81,12 +88,12 @@ void EcToFPGASink::doNextEvent() {
 }
 
 void EcToFPGASink::broadcastEc() {
+    _pending_events ++;
     if (ec_route::ec_exec_time == 0) {
         doNextEvent();
     } else {
         simtime_picosec current_ts = EventList::Get().now();
         next_idle_time[_node_id] = std::max(current_ts, next_idle_time[_node_id]) + ec_route::ec_exec_time;
-        _pending_events ++;
         // std::cout << "Next EC broadcast round scheduled at " << _next_idle << std::endl;
         EventList::Get().sourceIsPending(*this, next_idle_time[_node_id]);
     }
@@ -258,14 +265,6 @@ void EcFromFPGASrc::receivePacket(Packet &pkt) {
     }
 
     _last_acked = seqno;
-cout << setprecision(6) << "FPGAFlow " << str() << " " << id << " size " << _flowsize
-             << " start " << lround(timeAsUs(_start_time)) << " end " << lround(timeAsUs(current_ts))
-             << " fct " << timeAsUs(current_ts - _start_time)
-             << " sent " << _highest_sent << " " << _packets_sent - _highest_sent
-             << " tput " << _flowsize * 8000.0 / (current_ts - _start_time)
-             << " rtt " << timeAsUs(_rtt)
-             << " cwnd " << _cwnd
-             << " alpha " << 0 << endl;
     // send next pkt as needed
     while (_pending_pkts > 0 && _last_acked + _cwnd >= _highest_sent + _pkt_size) {
         sendOnePacket();
