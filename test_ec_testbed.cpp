@@ -13,7 +13,6 @@
 
 namespace ec_raw {
     CongaTopology topo;
-    int generateRandomRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst, const uint32_t random_seed);
     int genDstRoutes(int fpga_id, std::vector<ec_route::flow_info_t> &flows);
     
     int genEcRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst);
@@ -42,10 +41,8 @@ ec_testbed(const ArgList &args, Logfile &logfile)
     parseString(args, "flowdist", FlowDist);
     parseDouble(args, "ecchance", EcChance);
 
-    ec_route::ec_chance = EcChance;
     ec_route::ec_exec_time = 0;
     ec_route::fpga_mem_limit = 0;
-
 
     // uint32_t Ec_K = 7;
     // uint32_t Ec_N = 12;
@@ -76,8 +73,16 @@ ec_testbed(const ArgList &args, Logfile &logfile)
     // Calculate background traffic utilization.
     double bg_flow_rate = Utilization * (CongaTopology::LEAF_SPEED * CongaTopology::N_SERVER * CongaTopology::N_LEAF);
 
-    FlowGenerator *bgFlowGen = new FlowGenerator(eh, generateRandomRoute, bg_flow_rate, AvgFlowSize, fd);
-    bgFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
+    if (EcChance > 0) {
+        double scaling = 1.0 * ec_route::EC_K / ec_route::EC_N;
+        FlowGenerator *ecFlowGen = new FlowGenerator(eh, genEcRoute, bg_flow_rate * EcChance * scaling, AvgFlowSize, fd);
+        ecFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
+    }
+
+    if (EcChance < 1) {
+        FlowGenerator *smallFlowGen = new FlowGenerator(DataSource::TCP, genSmallFlowRoute, bg_flow_rate * (1-EcChance), AvgFlowSize, fd);
+        smallFlowGen->setTimeLimits(timeFromUs(1), timeFromSec(Duration) - 1);
+    }
 
     EventList::Get().setEndtime(timeFromSec(Duration));
 
@@ -102,32 +107,17 @@ ec_testbed(const ArgList &args, Logfile &logfile)
     // src->connect(start_time, *routeFwd, *routeRev, *snk);
 }
 
-// current: colocated fpga so src == dst
-int
-ec_raw::generateRandomRoute(route_t *&fwd,
-                            route_t *&rev,
-                            uint32_t &src,
-                            uint32_t &dst,
-                            const uint32_t random_seed)
-{
-    if (src == 0)
-        src = rand();
-    if (dst == 0)
-        dst = rand();
-
-    if (random_seed < ec_route::ec_chance * RAND_MAX) {
-        genEcRoute(fwd, rev, src, dst);
-    } else {
-        genSmallFlowRoute(fwd, rev, src, dst);
-    }
-}
-
 int
 ec_raw::genSmallFlowRoute(route_t *&fwd,
                         route_t *&rev,
                         uint32_t &src,
                         uint32_t &dst)
 {
+    if (src == 0)
+        src = rand();
+    if (dst == 0)
+        dst = rand();
+ 
     src = src % CongaTopology::N_NODES;
     dst = dst % (CongaTopology::N_NODES - 1);
 
@@ -180,6 +170,8 @@ ec_raw::genEcRoute(route_t *&fwd,
                     uint32_t &src,
                     uint32_t &dst)
 {
+    if (src == 0)
+        src = rand();
     // colocated src and fpga: empty route3
     src = src % CongaTopology::N_NODES;
     dst = src;

@@ -55,7 +55,7 @@ namespace fat_tree {
     Pipe  *pServerTor[N_SUBTREE][N_TOR][N_SERVER];
     Queue *qServerTor[N_SUBTREE][N_TOR][N_SERVER];
 
-    void generateRandomRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst, const uint32_t _);
+    void generateRandomRoute(route_t *&fwd, route_t *&rev, uint32_t &src, uint32_t &dst);
     void createQueue(std::string &qType, Queue *&queue, uint64_t speed, uint64_t buffer, Logfile &lf);
 }
 
@@ -218,8 +218,7 @@ void
 fat_tree::generateRandomRoute(route_t *&fwd,
                               route_t *&rev,
                               uint32_t &src,
-                              uint32_t &dst,
-                              const uint32_t _)
+                              uint32_t &dst)
 {
     if (dst != 0) {
         dst = dst % N_NODES;

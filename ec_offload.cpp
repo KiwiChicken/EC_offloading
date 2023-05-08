@@ -52,6 +52,7 @@ void EcToFPGASink::receivePacket(Packet &pkt) {
         TcpSink::receivePacket(pkt);
         return;
     } else if (_highest_received != 0 && seqno != _highest_received + MSS_BYTES) {
+        std::cout << "Out of order delivery, drop packet" << std::endl;
         return;
     }
 
@@ -209,7 +210,7 @@ void EcFromFPGASrc::doNextEvent() {
 
     else if (_RFC2988_RTO_timeout != 0 && current_ts >= _RFC2988_RTO_timeout) {
         #if MING_PROF 
-        cout << str() << " at " << timeAsMs(current_ts)
+        cout << "FPGA" << str() << " at " << timeAsMs(current_ts)
              << " RTO " << timeAsUs(_rto)
              << " MDEV " << timeAsUs(_mdev)
              << " RTT "<< timeAsUs(_rtt)

@@ -99,7 +99,7 @@ TcpSrc::doNextEvent()
     // Retransmission timeout.
     else if (_RFC2988_RTO_timeout != 0 && current_ts >= _RFC2988_RTO_timeout) {
 
-        cout << str() << " at " << timeAsMs(current_ts)
+        cout << "TCP" << str() << " at " << timeAsMs(current_ts)
              << " RTO " << timeAsUs(_rto)
              << " MDEV " << timeAsUs(_mdev)
              << " RTT "<< timeAsUs(_rtt)
